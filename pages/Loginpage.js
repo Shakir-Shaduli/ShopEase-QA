@@ -18,6 +18,10 @@ class LoginPage {
 
   async submit() {
   await this.page.getByRole('button', { name: 'Submit' }).click();
+  }
+
+  async logout() {
+  await this.page.getByRole('link', { name: 'Log out' }).click();
 }
 }
 
