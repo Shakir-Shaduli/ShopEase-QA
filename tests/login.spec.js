@@ -81,3 +81,36 @@ test('TC-05: Password field masks input', async ({ page }) => {
   await expect(page.getByLabel('Password'))
   .toHaveAttribute('type', 'password');
 });
+
+test.describe('SHOP-102: Logout functionality', () => {
+  let loginPage;
+
+  test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
+    await loginPage.goto();
+    await loginPage.login('student', 'Password123');
+  });
+
+  test('TC-01: Logout link is visible after login', async ({ page }) => {
+    await expect(
+      page.getByRole('link', { name: 'Log out' })
+    ).toBeVisible();
+  });
+
+  test('TC-02: Clicking logout navigates to login page', async ({ page }) => {
+    await loginPage.logout();
+
+    await expect(page).toHaveURL(
+      'https://practicetestautomation.com/practice-test-login/'
+    );
+  });
+
+  test('TC-03: Browser Back after logout returns to logged-in page', async ({ page }) => {
+    await loginPage.logout();
+    await page.goBack();
+
+    await expect(page).toHaveURL(
+      'https://practicetestautomation.com/logged-in-successfully/'
+    );
+  });
+});
