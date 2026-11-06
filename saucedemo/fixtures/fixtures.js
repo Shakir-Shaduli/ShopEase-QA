@@ -12,6 +12,8 @@ export const test = base.extend({
 
     const inventoryPage = new InventoryPage(page);
 
+    await page.locator('.inventory_item').first().waitFor();
+
     await use(inventoryPage);
   },
 });
