@@ -29,34 +29,56 @@ test.describe('SHOP-202: Product listing and sorting', () => {
     expect(names).toEqual([...names].sort());
   });
 
-  test('TC-03: Sort products by price low to high', async () => {
-    await inventoryPage.sortProducts('lohi');
+ const sortingScenarios = [
+  {
+    title: 'Sort products by price low to high',
+    option: 'lohi',
+    type: 'price',
+    order: 'lohi'
+  },
+  {
+    title: 'Sort products by price high to low',
+    option: 'hilo',
+    type: 'price',
+    order: 'hilo'
+  },
+  {
+    title: 'Sort products by name A to Z',
+    option: 'az',
+    type: 'name',
+    order: 'az'
+  },
+  {
+    title: 'Sort products by name Z to A',
+    option: 'za',
+    type: 'name',
+    order: 'za'
+  }
+];
 
-    const prices = await inventoryPage.getProductPrices();
+for (const scenario of sortingScenarios) {
+  test(`Verify ${scenario.title}`, async () => {
 
-    expect(prices).toEqual([...prices].sort((a, b) => a - b));
+    // Step 1: Capture the original product data
+    const originalData = scenario.type === 'name'
+      ? await inventoryPage.getProductNames()
+      : await inventoryPage.getProductPrices();
+
+    // Step 2: Apply sorting
+    await inventoryPage.sortProducts(scenario.option);
+
+    // Step 3: Get the actual sorted data
+    const actualData = scenario.type === 'name'
+      ? await inventoryPage.getProductNames()
+      : await inventoryPage.getProductPrices();
+
+    // Step 4: Calculate expected data
+    const expectedData = scenario.type === 'name'
+      ? inventoryPage.getExpectedNames(originalData, scenario.order)
+      : inventoryPage.getExpectedPrices(originalData, scenario.order);
+
+    // Step 5: Validate
+    expect(actualData).toEqual(expectedData);
   });
-
-  test('TC-04: Sort products by price high to low', async () => {
-    await inventoryPage.sortProducts('hilo');
-
-    const prices = await inventoryPage.getProductPrices();
-
-    expect(prices).toEqual([...prices].sort((a, b) => b - a));
-  });
-
-  test('TC-05: Sort products by name Z to A', async () => {
-    await inventoryPage.sortProducts('za');
-
-    const names = await inventoryPage.getProductNames();
-
-    expect(names).toEqual([...names].sort().reverse());
-  });
-  test('TC-06: Sort products by name A to Z', async () => {
-  await inventoryPage.sortProducts('az');
-
-  const names = await inventoryPage.getProductNames();
-
-  expect(names).toEqual([...names].sort());
-});
+}
 });

@@ -9,16 +9,36 @@ export class InventoryPage {
     );
   }
   async getProductNames() {
-  return await this.productItems.locator('.inventory_item_name').allTextContents();
-}
+    return await this.productItems.locator('.inventory_item_name').allTextContents();
+  }
 
-async getProductPrices() {
-  const prices = await this.productItems.locator('.inventory_item_price').allTextContents();
+  async getProductPrices() {
+    const prices = await this.productItems.locator('.inventory_item_price').allTextContents();
 
-  return prices.map(price => Number(price.replace('$', '')));
-}
+    return prices.map(price => Number(price.replace('$', '')));
+  }
 
-async sortProducts(option) {
-  await this.sortDropdown.selectOption(option);
-}
+  async sortProducts(option) {
+    await this.sortDropdown.selectOption(option);
+  }
+
+  getExpectedNames(originalNames, order) {
+    const expectedNames = [...originalNames].sort((a, b) =>
+      a.localeCompare(b)
+    );
+
+    if (order === 'za') {
+      expectedNames.reverse();
+    }
+
+    return expectedNames;
+  }
+
+  getExpectedPrices(originalPrices, order) {
+    const expectedPrices = [...originalPrices].sort((a, b) =>
+      order === 'lohi' ? a - b : b - a
+    );
+
+    return expectedPrices;
+  }
 }
